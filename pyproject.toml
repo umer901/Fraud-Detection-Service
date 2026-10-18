@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fraud-investigation-service"
+version = "0.1.0"
+description = "Explainable fraud screening and MCP-powered investigations"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1",
+  "mcp>=1.26,<2",
+  "openai>=2.0,<3",
+  "pydantic-settings>=2.7,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-asyncio>=1,<2", "httpx>=0.28,<1", "ruff>=0.11,<1"]
+
+[project.scripts]
+fraud-demo = "fraud_service.demo:main"
+fraud-mcp = "fraud_service.mcp_server:main"
+
+[tool.setuptools.packages.find]
+include = ["fraud_service*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
