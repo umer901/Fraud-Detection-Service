@@ -1,0 +1,20 @@
+services:
+  fraud-service:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      INVESTIGATION_MODE: ${INVESTIGATION_MODE:-demo}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-20b}
+      DATABASE_PATH: /app/data/fraud.db
+    volumes:
+      - fraud-data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+volumes:
+  fraud-data:
