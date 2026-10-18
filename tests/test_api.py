@@ -24,6 +24,21 @@ def test_discovery_and_filtering(client):
     assert client.get("/transactions?limit=0").status_code == 422
 
 
+def test_dashboard_and_bundled_assets_are_served_alongside_api(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Trace — Fraud Investigation" in response.text
+    assert "/assets/app.js" in response.text
+    for filename in ("app.js", "styles.css", "favicon.svg"):
+        asset = client.get(f"/assets/{filename}")
+        assert asset.status_code == 200
+        assert asset.content
+    assert client.get("/assets/nonexistent.js").status_code == 404
+    assert client.get("/openapi.json").status_code == 200
+    assert "/investigate/{transaction_id}" in client.get("/openapi.json").json()["paths"]
+
+
 @pytest.mark.parametrize(
     "tx_id,score,assessment_risk",
     [

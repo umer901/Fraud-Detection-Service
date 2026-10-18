@@ -2,11 +2,13 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
+from pathlib import Path
 from time import perf_counter
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from openai import RateLimitError
 
 from fraud_service.config import Settings
@@ -18,6 +20,7 @@ from fraud_service.rules import FraudRules, detect
 from fraud_service.seed import DEMO_CASES
 
 logger = logging.getLogger(__name__)
+STATIC_DIR = Path(__file__).parent / "static"
 
 
 def is_rate_limit(error: BaseException) -> bool:
@@ -64,7 +67,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/", include_in_schema=False)
     async def index():
-        return RedirectResponse("/docs")
+        return FileResponse(STATIC_DIR / "index.html")
+
+    app.mount("/assets", StaticFiles(directory=STATIC_DIR), name="assets")
 
     @app.get("/health", tags=["Demo"])
     def health():
