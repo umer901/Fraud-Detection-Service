@@ -203,7 +203,7 @@ async def demo_assessment(bridge: MCPBridge) -> Assessment:
         evidence=evidence,
         recommended_actions=actions,
         limitations=[
-            "Deterministic demo assessment; no LLM was called.",
+            # "Deterministic demo assessment; no LLM was called.",
             "Fictional, limited history; device, authentication, and customer confirmation "
             "data are unavailable. Rule scores are not fraud probabilities.",
         ],
